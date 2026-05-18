@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Heart, Github, Linkedin, Twitter, Mail } from 'lucide-react';
+import { Heart, Github, Linkedin, Twitter, Mail, ExternalLink, Zap } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
@@ -9,15 +9,20 @@ const Footer = () => {
   const footerLinks = {
     Platform: [
       { name: 'Home', href: '/' },
-      { name: 'Projects', href: '/projects' },
-      { name: 'Skills', href: '/skills' },
-      { name: 'Contact', href: '/contact' }
+      { name: 'Courses', href: '/courses' },
+      { name: 'Offline Learning', href: '/offline' },
+      { name: 'AI Assistant', href: '/ai-assistant' }
+    ],
+    Company: [
+      { name: 'About Us', href: '/about' },
+      { name: 'Careers', href: '#' },
+      { name: 'Press', href: '#' }
     ],
     Resources: [
-      { name: 'Blog', href: '#' },
-      { name: 'GitHub', href: '#' },
-      { name: 'Documentation', href: '#' },
-      { name: 'Support', href: '#' }
+      { name: 'Help Center', href: '#' },
+      { name: 'Community', href: '#' },
+      { name: 'Status', href: '#' },
+      { name: 'API Docs', href: '#' }
     ],
     Legal: [
       { name: 'Privacy Policy', href: '#' },
@@ -51,8 +56,7 @@ const Footer = () => {
               </span>
             </div>
             <p className="mb-4 text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
-              Building exceptional digital experiences with modern technologies.
-              Passionate about creating innovative solutions that make a difference.
+              Empowering education through offline-first technology. Learn anywhere, anytime, without boundaries.
             </p>
             <div className="flex space-x-3">
               {socialIcons.map((social, index) => (
@@ -92,12 +96,43 @@ const Footer = () => {
           ))}
         </div>
 
-        {/* Copyright */}
+        {/* Copyright Section - এখানে লিংক যোগ করা হয়েছে */}
         <div className="mt-8 pt-8 border-t text-center" style={{ borderColor: 'rgba(79, 70, 229, 0.1)' }}>
-          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-            © {currentYear} SmartLearn. All rights reserved.
-            Made with <Heart className="w-3 h-3 inline text-red-500 animate-pulse" /> for developers worldwide.
-          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 flex-wrap">
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+              © {currentYear} SmartLearn. All rights reserved.
+            </p>
+            
+            {/* Decorative dot */}
+            <span className="hidden sm:inline w-1 h-1 rounded-full" style={{ background: 'var(--accent-purple)', opacity: 0.5 }} />
+            
+            {/* Company Link - সুন্দর করে ডিজাইন করা */}
+            <motion.a 
+              href="https://onexero.netlify.app" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.02 }}
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-lg text-sm font-medium transition-all group"
+              style={{ 
+                background: 'rgba(79, 70, 229, 0.08)',
+                color: 'var(--accent-purple)',
+              }}
+            >
+              <Zap className="w-3 h-3 group-hover:rotate-12 transition-transform" />
+              <span>Powered by</span>
+              <span className="font-semibold">OneXero</span>
+              <ExternalLink className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+            </motion.a>
+            
+            {/* Made with love */}
+            <span className="hidden sm:inline w-1 h-1 rounded-full" style={{ background: 'var(--accent-purple)', opacity: 0.5 }} />
+            
+            <p className="text-xs inline-flex items-center gap-1" style={{ color: 'var(--text-secondary)' }}>
+              Made with
+              <Heart className="w-3 h-3 text-red-500 animate-pulse" />
+              for learners worldwide
+            </p>
+          </div>
         </div>
       </div>
     </footer>
