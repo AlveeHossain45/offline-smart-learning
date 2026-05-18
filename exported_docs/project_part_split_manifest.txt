@@ -1,0 +1,57 @@
+Split created: 2026-05-19 00:04:45
+Source bundle: project_bundle.txt
+Output folder: E:\offline-smart-learning\offline-smart-learning\exported_docs
+Output format: PDF
+Total parts: 3
+
+project_part_01.pdf - 29 section(s)
+  - .gitignore
+  - index.html
+  - netlify.toml
+  - package.json
+  - postcss.config.js
+  - tailwind.config.js
+  - vite.config.js
+  - public/placeholder-image.svg
+  - src/App.jsx
+  - src/main.jsx
+  - src/components/animations/AnimatedNumber.jsx
+  - src/components/animations/FadeIn.jsx
+  - src/components/animations/StaggerChildren.jsx
+  - src/components/dashboard/ActivityItem.jsx
+  - src/components/dashboard/StatsCard.jsx
+  - src/components/layout/Footer.jsx
+  - src/components/layout/Navbar.jsx
+  - src/components/layout/Sidebar.jsx
+  - src/components/ui/Badge.jsx
+  - src/components/ui/Button.jsx
+  - src/components/ui/Card.jsx
+  - src/components/ui/Input.jsx
+  - src/components/ui/Modal.jsx
+  - src/components/ui/ProgressBar.jsx
+  - src/components/ui/Skeleton.jsx
+  - src/components/ui/Tooltip.jsx
+  - src/context/AuthContext.jsx
+  - src/context/ThemeContext.jsx
+  - src/data/mockData.js
+project_part_02.pdf - 11 section(s)
+  - src/hooks/useClickOutside.js
+  - src/hooks/useDebounce.js
+  - src/hooks/useLocalStorage.js
+  - src/hooks/useOnlineStatus.js
+  - src/pages/About/About.jsx
+  - src/pages/AI/AIAssistant.jsx
+  - src/pages/Auth/Login.jsx
+  - src/pages/Auth/Register.jsx
+  - src/pages/CourseDetails/CourseDetails.jsx
+  - src/pages/Courses/Courses.jsx
+  - src/pages/Dashboard/Dashboard.jsx
+project_part_03.pdf - 8 section(s)
+  - src/pages/Home/Home.jsx
+  - src/pages/NotFound/NotFound.jsx
+  - src/pages/Offline/Offline.jsx
+  - src/pages/Profile/Profile.jsx
+  - src/pages/Settings/Settings.jsx
+  - src/routes/AppRoutes.jsx
+  - src/styles/globals.css
+  - src/units/helpers.js
