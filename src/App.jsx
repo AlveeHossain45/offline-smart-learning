@@ -14,7 +14,7 @@ import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
 import Profile from './pages/Profile/Profile';
 import Settings from './pages/Settings/Settings';
-import About from './pages/About/About.jsx';
+import About from './pages/About/About';
 import NotFound from './pages/NotFound/NotFound';
 
 function App() {
@@ -24,7 +24,7 @@ function App() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black"
+        className="min-h-screen"
       >
         <Navbar />
         <main className="pt-16 min-h-screen">

@@ -1,68 +1,71 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Facebook, Twitter, Instagram, Github, Mail, MapPin, Phone, Heart } from 'lucide-react';
+import { Heart, Github, Linkedin, Twitter, Mail } from 'lucide-react';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   const footerLinks = {
     Platform: [
-      { name: 'Courses', href: '/courses' },
-      { name: 'Offline Learning', href: '/offline' },
-      { name: 'AI Assistant', href: '/ai-assistant' },
-      { name: 'Dashboard', href: '/dashboard' }
-    ],
-    Company: [
-      { name: 'About Us', href: '/about' },
-      { name: 'Blog', href: '#' },
-      { name: 'Careers', href: '#' },
-      { name: 'Press', href: '#' }
+      { name: 'Home', href: '/' },
+      { name: 'Projects', href: '/projects' },
+      { name: 'Skills', href: '/skills' },
+      { name: 'Contact', href: '/contact' }
     ],
     Resources: [
-      { name: 'Help Center', href: '#' },
-      { name: 'Community', href: '#' },
-      { name: 'Status', href: '#' },
-      { name: 'API Docs', href: '#' }
+      { name: 'Blog', href: '#' },
+      { name: 'GitHub', href: '#' },
+      { name: 'Documentation', href: '#' },
+      { name: 'Support', href: '#' }
     ],
     Legal: [
       { name: 'Privacy Policy', href: '#' },
       { name: 'Terms of Service', href: '#' },
-      { name: 'Cookie Policy', href: '#' },
-      { name: 'Security', href: '#' }
+      { name: 'Cookie Policy', href: '#' }
     ]
   };
 
   const socialIcons = [
-    { icon: Twitter, href: '#', label: 'Twitter' },
-    { icon: Facebook, href: '#', label: 'Facebook' },
-    { icon: Instagram, href: '#', label: 'Instagram' },
-    { icon: Github, href: '#', label: 'GitHub' }
+    { icon: Github, href: 'https://github.com', label: 'GitHub' },
+    { icon: Linkedin, href: 'https://linkedin.com', label: 'LinkedIn' },
+    { icon: Twitter, href: 'https://twitter.com', label: 'Twitter' },
+    { icon: Mail, href: 'mailto:hello@smartlearn.com', label: 'Email' }
   ];
 
   return (
-    <footer className="bg-black/50 border-t border-white/10 mt-20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8">
+    <footer className="border-t mt-20" style={{ borderColor: 'rgba(79, 70, 229, 0.1)' }}>
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Brand Column */}
           <div className="lg:col-span-2">
-            <div className="flex items-center space-x-2 mb-4">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl" />
-              <span className="text-2xl font-bold gradient-text">SmartLearn</span>
+            <div className="flex items-center gap-2 mb-4">
+              <div 
+                className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-lg"
+                style={{ background: 'var(--accent-purple)', color: 'white' }}
+              >
+                S
+              </div>
+              <span className="text-xl font-bold" style={{ color: 'var(--navbar-logo)' }}>
+                SmartLearn
+              </span>
             </div>
-            <p className="text-gray-400 mb-4 leading-relaxed">
-              Empowering education through offline-first technology. Learn anywhere, anytime, without boundaries.
+            <p className="mb-4 text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              Building exceptional digital experiences with modern technologies.
+              Passionate about creating innovative solutions that make a difference.
             </p>
             <div className="flex space-x-3">
               {socialIcons.map((social, index) => (
                 <motion.a
                   key={index}
                   href={social.href}
-                  whileHover={{ y: -3 }}
-                  className="p-2 glass rounded-lg hover:bg-white/10 transition-colors"
-                  aria-label={social.label}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ y: -3, scale: 1.1 }}
+                  className="p-2 rounded-xl transition-all"
+                  style={{ background: 'var(--bg-card)', boxShadow: 'var(--shadow-sm)', color: 'var(--text-secondary)' }}
                 >
-                  <social.icon className="w-5 h-5" />
+                  <social.icon className="w-4 h-4" />
                 </motion.a>
               ))}
             </div>
@@ -71,13 +74,14 @@ const Footer = () => {
           {/* Links Columns */}
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
-              <h4 className="font-semibold mb-4 text-white">{category}</h4>
+              <h4 className="font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>{category}</h4>
               <ul className="space-y-2">
                 {links.map((link) => (
                   <li key={link.name}>
                     <Link 
                       to={link.href} 
-                      className="text-gray-400 hover:text-white transition-colors text-sm"
+                      className="text-sm transition-all hover:text-purple-500"
+                      style={{ color: 'var(--text-secondary)' }}
                     >
                       {link.name}
                     </Link>
@@ -88,27 +92,11 @@ const Footer = () => {
           ))}
         </div>
 
-        {/* Contact Info */}
-        <div className="grid md:grid-cols-3 gap-4 mt-8 pt-8 border-t border-white/10">
-          <div className="flex items-center space-x-3 text-gray-400">
-            <Mail className="w-5 h-5" />
-            <span className="text-sm">support@smartlearn.com</span>
-          </div>
-          <div className="flex items-center space-x-3 text-gray-400">
-            <Phone className="w-5 h-5" />
-            <span className="text-sm">+1 (555) 123-4567</span>
-          </div>
-          <div className="flex items-center space-x-3 text-gray-400">
-            <MapPin className="w-5 h-5" />
-            <span className="text-sm">San Francisco, CA</span>
-          </div>
-        </div>
-
         {/* Copyright */}
-        <div className="mt-8 pt-8 border-t border-white/10 text-center text-gray-400 text-sm">
-          <p>
-            © {currentYear} SmartLearn. All rights reserved. 
-            Made with <Heart className="w-4 h-4 inline text-red-500 animate-pulse" /> for learners worldwide.
+        <div className="mt-8 pt-8 border-t text-center" style={{ borderColor: 'rgba(79, 70, 229, 0.1)' }}>
+          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+            © {currentYear} SmartLearn. All rights reserved.
+            Made with <Heart className="w-3 h-3 inline text-red-500 animate-pulse" /> for developers worldwide.
           </p>
         </div>
       </div>

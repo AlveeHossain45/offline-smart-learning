@@ -1,13 +1,50 @@
-import React, { useState } from 'react';
+// Settings.jsx - Update the dark mode state
+
+import React, { useState, useEffect } from 'react';
 import { Sun, Moon, Bell, Globe, Database, Download, Shield, Monitor, Save, Languages, Wifi, Volume2 } from 'lucide-react';
 
 const Settings = () => {
-  const [darkMode, setDarkMode] = useState(true);
+  // Fix: Use localStorage for dark mode persistence
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem('darkMode');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+  
   const [notifications, setNotifications] = useState(true);
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [language, setLanguage] = useState('english');
   const [dataSaver, setDataSaver] = useState(false);
   const [downloadQuality, setDownloadQuality] = useState('high');
+
+  // Update document class and localStorage when darkMode changes
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('darkMode', JSON.stringify(darkMode));
+  }, [darkMode]);
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+  };
+
+  const handleSaveSettings = () => {
+    // Save all settings to localStorage
+    const settings = {
+      darkMode,
+      notifications,
+      emailNotifications,
+      language,
+      dataSaver,
+      downloadQuality
+    };
+    localStorage.setItem('appSettings', JSON.stringify(settings));
+    
+    // Show a toast or alert (optional)
+    alert('Settings saved successfully!');
+  };
 
   return (
     <div className="min-h-screen pb-20">
@@ -38,7 +75,7 @@ const Settings = () => {
                   </div>
                 </div>
                 <button
-                  onClick={() => setDarkMode(!darkMode)}
+                  onClick={toggleDarkMode}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                     darkMode ? 'bg-blue-600' : 'bg-gray-600'
                   }`}
@@ -135,7 +172,10 @@ const Settings = () => {
 
           {/* Save Button */}
           <div className="flex justify-end">
-            <button className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl font-semibold hover:shadow-lg transition-all">
+            <button 
+              onClick={handleSaveSettings}
+              className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl font-semibold hover:shadow-lg transition-all"
+            >
               <Save className="w-4 h-4 inline mr-2" />
               Save All Settings
             </button>
