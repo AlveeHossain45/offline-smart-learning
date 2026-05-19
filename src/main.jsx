@@ -12,7 +12,7 @@ export const useTheme = () => React.useContext(ThemeContext)
 const ThemeProvider = ({ children }) => {
   const [darkMode, setDarkMode] = React.useState(() => {
     const saved = localStorage.getItem('darkMode')
-    return saved !== null ? saved === 'true' : false  // false = Day Mode, true = Night Mode
+    return saved !== null ? saved === 'true' : false
   })
   
   React.useEffect(() => {
@@ -51,7 +51,16 @@ const AuthProvider = ({ children }) => {
   }, [])
 
   const login = async (email, password) => {
-    const user = { id: 1, email, name: 'Alex Morgan' }
+    const savedUser = localStorage.getItem('user')
+    if (savedUser) {
+      const existingUser = JSON.parse(savedUser)
+      setUser(existingUser)
+      return true
+    }
+    
+    // Extract name from email (before @)
+    const nameFromEmail = email.split('@')[0]
+    const user = { id: Date.now(), email, name: nameFromEmail }
     setUser(user)
     localStorage.setItem('user', JSON.stringify(user))
     return true
@@ -60,17 +69,24 @@ const AuthProvider = ({ children }) => {
   const logout = () => {
     setUser(null)
     localStorage.removeItem('user')
+    localStorage.removeItem('profileImage')
+    localStorage.removeItem('profileData')
   }
 
   const register = async (name, email, password) => {
-    const user = { id: 1, email, name }
+    const user = { id: Date.now(), email, name }
     setUser(user)
     localStorage.setItem('user', JSON.stringify(user))
     return true
   }
 
+  const updateUser = (updatedUser) => {
+    setUser(updatedUser)
+    localStorage.setItem('user', JSON.stringify(updatedUser))
+  }
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, register }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, register, setUser: updateUser }}>
       {children}
     </AuthContext.Provider>
   )

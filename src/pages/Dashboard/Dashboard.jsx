@@ -7,9 +7,11 @@ import {
   BarChart3, PlayCircle, Star, Users,
   Trophy, Flame, Activity, MessageCircle
 } from 'lucide-react';
+import { useAuth } from '../../main.jsx';
 
 const Dashboard = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('weekly');
+  const { user } = useAuth();
 
   const statsCards = [
     { icon: Clock, label: "Learning Hours", value: "127", change: "+12%", color: "#4F46E5" },
@@ -63,18 +65,24 @@ const Dashboard = () => {
 
   const maxHours = Math.max(...weeklyData);
 
+  // Get user's first name
+  const getFirstName = (name) => {
+    if (!name) return 'Student';
+    return name.split(' ')[0];
+  };
+
   return (
     <div className="min-h-screen pb-20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
         
-        {/* Header */}
+        {/* Header - Dynamic user name */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
           <h1 className="text-3xl md:text-4xl font-bold mb-2">
-            Dashboard, <span className="gradient-text">Alex</span>
+            Dashboard, <span className="gradient-text">{getFirstName(user?.name)}</span>
           </h1>
           <p className="text-secondary">Track your learning progress and achievements</p>
         </motion.div>
@@ -234,7 +242,7 @@ const Dashboard = () => {
                 </div>
               </div>
               <h3 className="font-semibold mb-1">15 Day Streak</h3>
-              <p className="text-xs text-secondary">Keep up the great work!</p>
+              <p className="text-xs text-secondary">Keep up the great work, {getFirstName(user?.name)}!</p>
               <div className="flex justify-center gap-1 mt-3">
                 {[...Array(7)].map((_, i) => (
                   <div key={i} className="w-1.5 h-1.5 rounded-full" style={{ background: i < 5 ? '#10B981' : '#4F46E520' }} />
@@ -274,7 +282,7 @@ const Dashboard = () => {
                 <h3 className="font-semibold">AI Recommendation</h3>
               </div>
               <p className="text-sm text-secondary mb-3">
-                Based on your progress, continue with:
+                Based on your progress, {getFirstName(user?.name)}:
               </p>
               <div className="p-3 rounded-xl mb-3" style={{ background: '#4F46E510' }}>
                 <p className="font-medium text-sm">Advanced React Patterns</p>
