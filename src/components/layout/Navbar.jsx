@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, User, Bell, Search, LogOut, Settings, UserCircle, ChevronDown, Sun, Moon, Github, Linkedin, Twitter } from 'lucide-react';
+import { 
+  Menu, X, User, Bell, Search, LogOut, Settings, 
+  UserCircle, ChevronDown, Sun, Moon, XCircle, CheckCircle 
+} from 'lucide-react';
 import { useTheme, useAuth } from '../../main.jsx';
 
 const Navbar = () => {
@@ -9,10 +12,30 @@ const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [notifications, setNotifications] = useState([
+    { id: 1, title: "New course available!", message: "Advanced React course just added", time: "5 min ago", read: false, type: "course" },
+    { id: 2, title: "Quiz reminder", message: "Complete your ML quiz today", time: "1 hour ago", read: false, type: "quiz" },
+    { id: 3, title: "Achievement unlocked", message: "You earned 7-day streak badge", time: "2 hours ago", read: true, type: "achievement" },
+    { id: 4, title: "Download complete", message: "React course downloaded successfully", time: "1 day ago", read: true, type: "download" }
+  ]);
+  
   const { darkMode, toggleDarkMode } = useTheme();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Sample courses data for search
+  const allCourses = [
+    { id: 1, title: "Advanced React & Modern Web Development", category: "Development", instructor: "Sarah Johnson" },
+    { id: 2, title: "Machine Learning Fundamentals", category: "AI & ML", instructor: "Dr. Michael Chen" },
+    { id: 3, title: "UI/UX Design Mastery", category: "Design", instructor: "Emma Rodriguez" },
+    { id: 4, title: "Data Science & Analytics", category: "Data Science", instructor: "Prof. James Wilson" },
+    { id: 5, title: "Cloud Computing with AWS", category: "Cloud", instructor: "Alex Thompson" },
+    { id: 6, title: "Cybersecurity Essentials", category: "Security", instructor: "Lisa Wang" }
+  ];
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -23,7 +46,51 @@ const Navbar = () => {
   useEffect(() => {
     setIsMobileMenuOpen(false);
     setIsProfileOpen(false);
+    setIsNotificationsOpen(false);
+    setIsSearchOpen(false);
   }, [location]);
+
+  // Search functionality
+  useEffect(() => {
+    if (searchQuery.trim() === '') {
+      setSearchResults([]);
+    } else {
+      const filtered = allCourses.filter(course => 
+        course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        course.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        course.instructor.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setSearchResults(filtered);
+    }
+  }, [searchQuery]);
+
+  const markNotificationAsRead = (id) => {
+    setNotifications(notifications.map(notif => 
+      notif.id === id ? { ...notif, read: true } : notif
+    ));
+  };
+
+  const markAllAsRead = () => {
+    setNotifications(notifications.map(notif => ({ ...notif, read: true })));
+  };
+
+  const unreadCount = notifications.filter(n => !n.read).length;
+
+  const handleSearchResultClick = (courseId) => {
+    setIsSearchOpen(false);
+    setSearchQuery('');
+    navigate(`/course/${courseId}`);
+  };
+
+  const handleNotificationClick = (notification) => {
+    markNotificationAsRead(notification.id);
+    if (notification.type === 'course') {
+      navigate('/courses');
+    } else if (notification.type === 'quiz') {
+      navigate('/dashboard');
+    }
+    setIsNotificationsOpen(false);
+  };
 
   const navLinks = [
     { to: '/', label: 'Home' },
@@ -50,13 +117,13 @@ const Navbar = () => {
           isScrolled ? 'glass-effect shadow-md' : 'bg-transparent'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 md:h-20">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 group">
               <div 
                 className="w-9 h-9 rounded-xl flex items-center justify-center font-bold text-lg"
-                style={{ background: 'var(--accent-purple)', color: 'white' }}
+                style={{ background: '#4F46E5', color: 'white' }}
               >
                 S
               </div>
@@ -76,11 +143,11 @@ const Navbar = () => {
                   to={link.to}
                   className="px-4 py-2 rounded-xl transition-all duration-300 text-sm font-medium"
                   style={{
-                    color: location.pathname === link.to ? 'var(--accent-purple)' : 'var(--text-secondary)',
+                    color: location.pathname === link.to ? '#4F46E5' : 'var(--text-secondary)',
                   }}
                   onMouseEnter={(e) => {
                     if (location.pathname !== link.to) {
-                      e.currentTarget.style.color = 'var(--accent-purple)';
+                      e.currentTarget.style.color = '#4F46E5';
                     }
                   }}
                   onMouseLeave={(e) => {
@@ -95,8 +162,8 @@ const Navbar = () => {
             </div>
 
             {/* Right side actions */}
-            <div className="flex items-center gap-3">
-              {/* Search */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              {/* Search Button */}
               <motion.button 
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -104,24 +171,83 @@ const Navbar = () => {
                 className="p-2 rounded-xl transition-all"
                 style={{ background: 'var(--bg-card)', boxShadow: 'var(--shadow-sm)' }}
               >
-                <Search className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
+                <Search className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: 'var(--text-secondary)' }} />
               </motion.button>
               
-              {/* Notifications */}
-              <motion.button 
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="p-2 rounded-xl transition-all relative"
-                style={{ background: 'var(--bg-card)', boxShadow: 'var(--shadow-sm)' }}
-              >
-                <Bell className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
-                <span 
-                  className="absolute top-1 right-1 w-2 h-2 rounded-full animate-pulse"
-                  style={{ background: 'var(--accent-purple)' }}
-                />
-              </motion.button>
+              {/* Notifications Button with Badge */}
+              <div className="relative">
+                <motion.button 
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                  className="p-2 rounded-xl transition-all relative"
+                  style={{ background: 'var(--bg-card)', boxShadow: 'var(--shadow-sm)' }}
+                >
+                  <Bell className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: 'var(--text-secondary)' }} />
+                  {unreadCount > 0 && (
+                    <span 
+                      className="absolute -top-1 -right-1 w-4 h-4 rounded-full text-[10px] font-bold flex items-center justify-center"
+                      style={{ background: '#EF4444', color: 'white' }}
+                    >
+                      {unreadCount}
+                    </span>
+                  )}
+                </motion.button>
 
-              {/* Premium Sun/Moon Toggle */}
+                {/* Notifications Dropdown */}
+                <AnimatePresence>
+                  {isNotificationsOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl overflow-hidden"
+                      style={{ background: 'var(--bg-card)', boxShadow: 'var(--shadow-lg)', border: '1px solid rgba(79, 70, 229, 0.1)' }}
+                    >
+                      <div className="p-4 border-b flex justify-between items-center" style={{ borderColor: 'rgba(79, 70, 229, 0.1)' }}>
+                        <h3 className="font-semibold">Notifications</h3>
+                        {unreadCount > 0 && (
+                          <button 
+                            onClick={markAllAsRead}
+                            className="text-xs px-2 py-1 rounded-lg transition-all"
+                            style={{ background: '#4F46E510', color: '#4F46E5' }}
+                          >
+                            Mark all read
+                          </button>
+                        )}
+                      </div>
+                      <div className="max-h-96 overflow-y-auto">
+                        {notifications.length === 0 ? (
+                          <div className="p-8 text-center text-secondary text-sm">
+                            No notifications
+                          </div>
+                        ) : (
+                          notifications.map((notif) => (
+                            <div
+                              key={notif.id}
+                              onClick={() => handleNotificationClick(notif)}
+                              className={`p-4 border-b cursor-pointer transition-all hover:bg-opacity-5 hover:bg-current ${!notif.read ? 'bg-opacity-5' : ''}`}
+                              style={{ borderColor: 'rgba(79, 70, 229, 0.05)' }}
+                            >
+                              <div className="flex items-start gap-3">
+                                <div className="w-2 h-2 mt-2 rounded-full flex-shrink-0" style={{ background: !notif.read ? '#4F46E5' : 'transparent' }} />
+                                <div className="flex-1">
+                                  <p className="font-medium text-sm">{notif.title}</p>
+                                  <p className="text-xs text-secondary mt-1">{notif.message}</p>
+                                  <p className="text-xs text-secondary mt-2">{notif.time}</p>
+                                </div>
+                              </div>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Theme Toggle */}
               <motion.button
                 onClick={toggleDarkMode}
                 whileTap={{ scale: 0.95 }}
@@ -129,8 +255,8 @@ const Navbar = () => {
                 style={{ background: 'var(--bg-card)', boxShadow: 'var(--shadow-sm)' }}
               >
                 {darkMode ? 
-                  <Sun className="w-4 h-4" style={{ color: 'var(--accent-purple)' }} /> : 
-                  <Moon className="w-4 h-4" style={{ color: 'var(--accent-purple)' }} />
+                  <Sun className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#4F46E5' }} /> : 
+                  <Moon className="w-4 h-4 sm:w-5 sm:h-5" style={{ color: '#4F46E5' }} />
                 }
               </motion.button>
 
@@ -146,19 +272,14 @@ const Navbar = () => {
                   >
                     <div 
                       className="w-8 h-8 rounded-full flex items-center justify-center"
-                      style={{ background: 'var(--accent-purple)' }}
+                      style={{ background: '#4F46E5' }}
                     >
                       <User className="w-4 h-4 text-white" />
                     </div>
                     <span className="text-sm font-medium hidden xl:inline" style={{ color: 'var(--text-primary)' }}>
                       {user.name?.split(' ')[0] || 'User'}
                     </span>
-                    <motion.div
-                      animate={{ rotate: isProfileOpen ? 180 : 0 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <ChevronDown className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
-                    </motion.div>
+                    <ChevronDown className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
                   </motion.button>
                   
                   <AnimatePresence>
@@ -167,67 +288,51 @@ const Navbar = () => {
                         initial={{ opacity: 0, y: -10, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -10, scale: 0.95 }}
-                        transition={{ duration: 0.2 }}
                         className="absolute right-0 mt-2 w-56 rounded-2xl overflow-hidden"
                         style={{ background: 'var(--bg-card)', boxShadow: 'var(--shadow-lg)', border: '1px solid rgba(79, 70, 229, 0.1)' }}
                       >
                         <div className="p-4 border-b" style={{ borderColor: 'rgba(79, 70, 229, 0.1)' }}>
-                          <p className="font-semibold" style={{ color: 'var(--text-primary)' }}>{user.name}</p>
-                          <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>{user.email}</p>
+                          <p className="font-semibold">{user.name}</p>
+                          <p className="text-xs mt-1 text-secondary">{user.email}</p>
                         </div>
                         <div className="p-2">
                           <Link to="/profile" onClick={() => setIsProfileOpen(false)}>
-                            <motion.div 
-                              whileHover={{ x: 5 }}
-                              className="flex items-center gap-3 px-3 py-2 rounded-xl transition-all"
-                            >
-                              <UserCircle className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
-                              <span className="text-sm" style={{ color: 'var(--text-primary)' }}>Profile</span>
-                            </motion.div>
+                            <div className="flex items-center gap-3 px-3 py-2 rounded-xl transition-all hover:bg-opacity-5 hover:bg-current">
+                              <UserCircle className="w-4 h-4" />
+                              <span className="text-sm">Profile</span>
+                            </div>
                           </Link>
                           <Link to="/settings" onClick={() => setIsProfileOpen(false)}>
-                            <motion.div 
-                              whileHover={{ x: 5 }}
-                              className="flex items-center gap-3 px-3 py-2 rounded-xl transition-all"
-                            >
-                              <Settings className="w-4 h-4" style={{ color: 'var(--text-secondary)' }} />
-                              <span className="text-sm" style={{ color: 'var(--text-primary)' }}>Settings</span>
-                            </motion.div>
+                            <div className="flex items-center gap-3 px-3 py-2 rounded-xl transition-all hover:bg-opacity-5 hover:bg-current">
+                              <Settings className="w-4 h-4" />
+                              <span className="text-sm">Settings</span>
+                            </div>
                           </Link>
                           <div className="h-px my-2" style={{ background: 'rgba(79, 70, 229, 0.1)' }} />
-                          <motion.button 
-                            whileHover={{ x: 5 }}
+                          <button 
                             onClick={handleLogout}
-                            className="flex items-center gap-3 w-full px-3 py-2 rounded-xl transition-all"
+                            className="flex items-center gap-3 w-full px-3 py-2 rounded-xl transition-all hover:bg-red-500/10"
                             style={{ color: '#EF4444' }}
                           >
                             <LogOut className="w-4 h-4" />
                             <span className="text-sm">Logout</span>
-                          </motion.button>
+                          </button>
                         </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
                 </div>
               ) : (
-                <div className="hidden md:flex items-center gap-3">
+                <div className="hidden md:flex items-center gap-2">
                   <Link to="/login">
-                    <motion.button 
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="px-5 py-2 rounded-xl text-sm font-medium btn-outline"
-                    >
+                    <button className="px-4 py-1.5 rounded-xl text-sm font-medium btn-outline">
                       Login
-                    </motion.button>
+                    </button>
                   </Link>
                   <Link to="/register">
-                    <motion.button 
-                      whileHover={{ scale: 1.05, y: -2 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="px-6 py-2 rounded-xl text-sm font-semibold btn-primary"
-                    >
+                    <button className="px-5 py-1.5 rounded-xl text-sm font-semibold btn-primary">
                       Sign Up
-                    </motion.button>
+                    </button>
                   </Link>
                 </div>
               )}
@@ -240,8 +345,8 @@ const Navbar = () => {
                 style={{ background: 'var(--bg-card)', boxShadow: 'var(--shadow-sm)' }}
               >
                 {isMobileMenuOpen ? 
-                  <X className="w-5 h-5" style={{ color: 'var(--accent-purple)' }} /> : 
-                  <Menu className="w-5 h-5" style={{ color: 'var(--accent-purple)' }} />
+                  <X className="w-5 h-5" style={{ color: '#4F46E5' }} /> : 
+                  <Menu className="w-5 h-5" style={{ color: '#4F46E5' }} />
                 }
               </motion.button>
             </div>
@@ -255,11 +360,10 @@ const Navbar = () => {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
               className="lg:hidden border-t"
               style={{ background: 'var(--bg-card)', borderColor: 'rgba(79, 70, 229, 0.1)' }}
             >
-              <div className="px-6 py-4 space-y-2">
+              <div className="px-4 py-3 space-y-1">
                 {navLinks.map((link) => (
                   <Link
                     key={link.to}
@@ -267,32 +371,27 @@ const Navbar = () => {
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="flex items-center px-4 py-3 rounded-xl transition-all"
                     style={{
-                      color: location.pathname === link.to ? 'var(--accent-purple)' : 'var(--text-secondary)',
+                      color: location.pathname === link.to ? '#4F46E5' : 'var(--text-secondary)',
                     }}
                   >
                     <span className="flex-1 font-medium">{link.label}</span>
-                    {location.pathname === link.to && (
-                      <div className="w-1.5 h-1.5 rounded-full" style={{ background: 'var(--accent-purple)' }} />
-                    )}
                   </Link>
                 ))}
                 
                 {/* Dark mode toggle in mobile */}
-                <motion.button
-                  whileTap={{ scale: 0.98 }}
+                <button
                   onClick={toggleDarkMode}
                   className="flex items-center justify-between w-full px-4 py-3 rounded-xl transition-all"
                   style={{ color: 'var(--text-secondary)' }}
                 >
                   <span className="font-medium">{darkMode ? 'Light Mode' : 'Dark Mode'}</span>
-                  <div className="w-10 h-5 rounded-full transition-all relative" style={{ background: 'var(--accent-purple)' }}>
-                    <motion.div 
-                      className="w-4 h-4 rounded-full bg-white shadow-md absolute top-0.5"
-                      animate={{ x: darkMode ? 20 : 2 }}
-                      transition={{ type: 'spring', stiffness: 200 }}
+                  <div className="w-10 h-5 rounded-full relative" style={{ background: '#4F46E5' }}>
+                    <div 
+                      className={`w-4 h-4 rounded-full bg-white absolute top-0.5 transition-all`}
+                      style={{ left: darkMode ? '22px' : '2px' }}
                     />
                   </div>
-                </motion.button>
+                </button>
                 
                 {!user ? (
                   <div className="pt-3 space-y-2">
@@ -324,7 +423,7 @@ const Navbar = () => {
                     <button 
                       onClick={handleLogout}
                       className="w-full py-3 rounded-xl text-center flex items-center justify-center gap-2"
-                      style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#EF4444' }}
+                      style={{ background: '#EF444410', color: '#EF4444' }}
                     >
                       <LogOut className="w-4 h-4" />
                       <span>Logout</span>
@@ -337,7 +436,7 @@ const Navbar = () => {
         </AnimatePresence>
       </motion.nav>
 
-      {/* Search Modal */}
+      {/* Search Modal - Fully Functional */}
       <AnimatePresence>
         {isSearchOpen && (
           <motion.div
@@ -346,48 +445,81 @@ const Navbar = () => {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-start justify-center p-4"
             style={{ background: 'rgba(0, 0, 0, 0.85)', backdropFilter: 'blur(16px)' }}
-            onClick={() => setIsSearchOpen(false)}
+            onClick={() => {
+              setIsSearchOpen(false);
+              setSearchQuery('');
+              setSearchResults([]);
+            }}
           >
             <motion.div
-              initial={{ scale: 0.9, y: -30, opacity: 0 }}
+              initial={{ scale: 0.95, y: -30, opacity: 0 }}
               animate={{ scale: 1, y: 0, opacity: 1 }}
-              exit={{ scale: 0.9, y: -30, opacity: 0 }}
+              exit={{ scale: 0.95, y: -30, opacity: 0 }}
               transition={{ type: 'spring', damping: 25 }}
               className="w-full max-w-2xl mt-20"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="rounded-2xl p-5" style={{ background: 'var(--bg-card)', boxShadow: 'var(--shadow-lg)' }}>
-                <div className="flex items-center gap-3">
-                  <Search className="w-5 h-5" style={{ color: 'var(--accent-purple)' }} />
-                  <input
-                    type="text"
-                    placeholder="Search courses, lessons, or topics..."
-                    className="flex-1 bg-transparent outline-none luxury-input"
-                    autoFocus
-                  />
-                  <motion.button 
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => setIsSearchOpen(false)} 
-                    className="p-1 rounded-lg transition-all"
-                  >
-                    <X className="w-5 h-5" style={{ color: 'var(--text-secondary)' }} />
-                  </motion.button>
-                </div>
-                <div className="mt-4 pt-4" style={{ borderTop: '1px solid rgba(79, 70, 229, 0.1)' }}>
-                  <p className="text-xs mb-3" style={{ color: 'var(--text-secondary)' }}>✨ Popular searches:</p>
-                  <div className="flex flex-wrap gap-2">
-                    {['React Development', 'Machine Learning', 'UI/UX Design', 'Python', 'Cloud Computing'].map((term) => (
-                      <motion.span 
-                        key={term} 
-                        whileHover={{ scale: 1.05 }}
-                        className="px-3 py-1.5 rounded-lg text-xs cursor-pointer transition-all"
-                        style={{ background: 'var(--bg-primary)', color: 'var(--text-secondary)' }}
+              <div className="rounded-2xl overflow-hidden" style={{ background: 'var(--bg-card)', boxShadow: 'var(--shadow-lg)' }}>
+                {/* Search Input */}
+                <div className="p-4 border-b" style={{ borderColor: 'rgba(79, 70, 229, 0.1)' }}>
+                  <div className="flex items-center gap-3">
+                    <Search className="w-5 h-5 flex-shrink-0" style={{ color: '#4F46E5' }} />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search for courses, lessons, or topics..."
+                      className="flex-1 bg-transparent outline-none text-base"
+                      style={{ color: 'var(--text-primary)' }}
+                      autoFocus
+                    />
+                    {searchQuery && (
+                      <button 
+                        onClick={() => setSearchQuery('')}
+                        className="p-1 rounded-lg transition-all hover:bg-opacity-10 hover:bg-current"
                       >
-                        {term}
-                      </motion.span>
-                    ))}
+                        <XCircle className="w-4 h-4 text-secondary" />
+                      </button>
+                    )}
                   </div>
+                </div>
+                
+                {/* Search Results */}
+                <div className="max-h-96 overflow-y-auto">
+                  {searchQuery.trim() === '' ? (
+                    <div className="p-8 text-center">
+                      <Search className="w-12 h-12 mx-auto mb-3 opacity-30" style={{ color: 'var(--text-secondary)' }} />
+                      <p className="text-secondary text-sm">Type something to search courses</p>
+                      <div className="mt-4 flex flex-wrap gap-2 justify-center">
+                        <span className="text-xs px-2 py-1 rounded-lg" style={{ background: '#4F46E510', color: '#4F46E5' }}>React</span>
+                        <span className="text-xs px-2 py-1 rounded-lg" style={{ background: '#4F46E510', color: '#4F46E5' }}>Machine Learning</span>
+                        <span className="text-xs px-2 py-1 rounded-lg" style={{ background: '#4F46E510', color: '#4F46E5' }}>UI/UX Design</span>
+                        <span className="text-xs px-2 py-1 rounded-lg" style={{ background: '#4F46E510', color: '#4F46E5' }}>Python</span>
+                      </div>
+                    </div>
+                  ) : searchResults.length === 0 ? (
+                    <div className="p-8 text-center">
+                      <p className="text-secondary">No results found for "{searchQuery}"</p>
+                      <p className="text-xs text-secondary mt-2">Try different keywords</p>
+                    </div>
+                  ) : (
+                    <div className="divide-y" style={{ borderColor: 'rgba(79, 70, 229, 0.1)' }}>
+                      {searchResults.map((course) => (
+                        <div
+                          key={course.id}
+                          onClick={() => handleSearchResultClick(course.id)}
+                          className="p-4 cursor-pointer transition-all hover:bg-opacity-5 hover:bg-current"
+                        >
+                          <p className="font-medium text-sm">{course.title}</p>
+                          <div className="flex gap-3 mt-1">
+                            <span className="text-xs text-secondary">{course.category}</span>
+                            <span className="text-xs text-secondary">•</span>
+                            <span className="text-xs text-secondary">{course.instructor}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>
